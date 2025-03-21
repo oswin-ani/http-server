@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Информация о пользователе</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        /* Сохраняем оригинальные стили */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            background: white;
+            padding: 20px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .column {
+            width: 30%;
+            padding: 10px;
+            background: #e8e8e8;
+            border-radius: 5px;
+        }
+        h1 {
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+        }
+        p {
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .update-button {
+            display: block;
+            width: 100%;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 15px;
+            border: none;
+            background: #6f4e37;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .update-button:hover {
+            background: #5a3c2a;
+        }
+        .data-placeholder {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Данные пользователя</h1>
+    <div class="container">
+        <div class="column">
+            <h2>GitHub</h2>
+            <p>Имя: <span id="github-name" class="data-placeholder">загрузка...</span></p>
+            <p>Email: <span id="github-email" class="data-placeholder">загрузка...</span></p>
+            <p>Публичные репозитории: <span id="github-repos" class="data-placeholder">загрузка...</span></p>
+            <p>Подписчики: <span id="github-followers" class="data-placeholder">загрузка...</span></p>
+        </div>
+        <div class="column">
+            <h2>Lichess</h2>
+            <p>Имя: <span id="lichess-username" class="data-placeholder">загрузка...</span></p>
+            <p>Страна: <span id="lichess-country" class="data-placeholder">загрузка...</span></p>
+            <p>Игры сыграно: <span id="lichess-games" class="data-placeholder">загрузка...</span></p>
+            <p>Рейтинг Blitz: <span id="lichess-blitz" class="data-placeholder">загрузка...</span></p>
+        </div>
+        <div class="column">
+            <h2>Stepik</h2>
+            <p>Имя: <span id="stepik-name" class="data-placeholder">загрузка...</span></p>
+            <p>Дата регистрации: <span id="stepik-join-date" class="data-placeholder">загрузка...</span></p>
+            <p>Рейтинг знаний: <span id="stepik-rank" class="data-placeholder">загрузка...</span></p>
+        </div>
+    </div>
+    <button class="update-button" onclick="updateData()">Обновить данные</button>
+    
+    <script>
+        function updateUI(data) {
+            // Обновление данных GitHub
+            document.getElementById('github-name').textContent = data.github.name || 'не указано';
+            document.getElementById('github-email').textContent = data.github.email || 'не указано';
+            document.getElementById('github-repos').textContent = data.github.public_repos ?? '0';
+            document.getElementById('github-followers').textContent = data.github.followers ?? '0';
+
+            // Обновление данных Lichess
+            document.getElementById('lichess-username').textContent = data.lichess.username || 'не указано';
+            document.getElementById('lichess-country').textContent = data.lichess.country || 'не указано';
+            document.getElementById('lichess-games').textContent = data.lichess.games_played ?? '0';
+            document.getElementById('lichess-blitz').textContent = data.lichess.rating_blitz ?? '0';
+
+            // Обновление данных Stepik
+            document.getElementById('stepik-name').textContent = data.stepik.name || 'не указано';
+            document.getElementById('stepik-join-date').textContent = data.stepik.join_date || 'не указано';
+            document.getElementById('stepik-rank').textContent = data.stepik.knowledge_rank ?? '0';
+        }
+
+        function loadData() {
+            axios.get('/data')
+                .then(response => {
+                    updateUI(response.data);
+                })
+                .catch(error => {
+                    console.error('Ошибка загрузки данных:', error);
+                    alert('Не удалось загрузить данные');
+                });
+        }
+
+        function updateData() {
+            axios.post('/update')
+                .then(() => {
+                    loadData();
+                })
+                .catch(error => {
+                    console.error('Ошибка обновления:', error);
+                    alert('Ошибка при обновлении данных');
+                });
+        }
+
+        // Загрузка данных при старте
+        window.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>
