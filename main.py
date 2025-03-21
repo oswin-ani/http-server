@@ -5,13 +5,13 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    global initial_render
-    if not initial_render:
-        initial_render = True
-        return render_template("index.html")
-    return jsonify(load_data())
+    return render_template("index.html")  # Рендерим шаблон без данных
 
-@app.route("/update")
+@app.route("/data")
+def get_data():
+    return jsonify(load_data())  # Отдаем данные отдельным эндпоинтом
+
+@app.route("/update", methods=['POST'])
 def update():
     data = update_data()
     return jsonify(data)
